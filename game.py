@@ -32,9 +32,8 @@ class Game:
                 if i in range(0, board.height) and j in range(0, board.width) and maps[i][j] != maps[x][y] and maps[i][j] != CellStatus.TYPE_NONE:
                     maps[i][j] = CellStatus.TYPE_BLOCK
 
-    def checkWin(self, cell):
+    def checkWin(self):
         maps = self.board.map
-
         maps_flat = np.array(maps).flatten().tolist()
         if CellStatus.TYPE_X not in maps_flat:
             print('O win!')
@@ -66,8 +65,10 @@ class Game:
             print('Please try again!')
 
     def play(self):
-        self.board.printBoard()
         while True:
+            self.board.printBoard()
+            if self.checkWin():
+                break
             status = CellStatus.TYPE_X if self.isTurnX else CellStatus.TYPE_O
             position = input('Nhap toa do ' + status.value +
                              ' (Enter "q" to end game): ')
@@ -76,6 +77,3 @@ class Game:
             pos_x, pos_y = [int(x) for x in position.split()]
             cell = Cell(status, pos_x, pos_y)
             self.move(cell)
-            self.board.printBoard()
-            if self.checkWin(cell):
-                break
