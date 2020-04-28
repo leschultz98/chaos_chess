@@ -1,6 +1,6 @@
 import numpy as np
 
-n = 3
+n = 5
 type_x = 'X'
 type_o = 'O'
 type_block = '.'
@@ -10,11 +10,11 @@ maps[0][0] = type_x
 maps[n-1][n-1] = type_o
 isTurnX = True
 
-# maps[0][2] = type_o
-
 
 def printBoard():
+    print(" ".join([' '] + [str(x) for x in list(range(n))]))
     for x in range(n):
+        print(str(x), end=' ')
         for y in range(n):
             print(maps[x][y], end=' ')
         print()
@@ -48,24 +48,34 @@ def move(type, x, y):
 
 
 def checkWin():
-    maps_flat = np.array(maps).flatten()
+    maps_flat = np.array(maps).flatten().tolist()
     if type_x not in maps_flat:
         print('O win!')
         return True
     if type_o not in maps_flat:
         print('X win!')
         return True
-    if type_none not in maps_flat:
+    # if type_none not in maps_flat:
+    if 'q' in position:
         print('Wait to calculate...')
+        point_x = maps_flat.count(type_x)
+        point_o = maps_flat.count(type_o)
+        print('\tPoint of X: ', point_x)
+        print('\tPoint of Y: ', point_o)
+        if point_x != point_o:
+            win = 'X' if point_x > point_o else 'O'
+            print('\t' + win + ' win!')
+        else:
+            print('\t~Equal~')
         return True
     return False
 
 
 while True:
     printBoard()
+    types = type_x if isTurnX else type_o
+    position = input('Nhap toa do ' + types + ' (Enter "q" to end game): ')
     if checkWin():
         break
-    types = type_x if isTurnX else type_o
-    pos_x, pos_y = [int(x)
-                    for x in input('Nhap toa do ' + types + ': ').split()]
+    pos_x, pos_y = [int(x) for x in position.split()]
     move(types, pos_x, pos_y)
