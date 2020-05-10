@@ -6,3 +6,8 @@ def test(a):
     print(a.name)
 
 test(A())
+
+a=A()
+b=A()
+print(a==b)
+
