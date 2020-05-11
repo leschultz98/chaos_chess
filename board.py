@@ -12,7 +12,7 @@ class Board:
 
     def __createMap(self):
         self.map[0][0] = CellStatus.X
-        self.map[self.height-1][self.width-1] = CellStatus.O
+        self.map[self.height - 1][self.width - 1] = CellStatus.O
 
     def printBoard(self):
         print(" ".join([' '] + [str(x) for x in list(range(self.width))]))
@@ -24,4 +24,3 @@ class Board:
 
     def setCellStatus(self, cell):
         self.map[cell.posX][cell.posY] = cell.status
-

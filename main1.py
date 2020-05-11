@@ -7,7 +7,7 @@ type_block = '.'
 type_none = '_'
 maps = [[type_none for _ in range(n)] for _ in range(n)]
 maps[0][0] = type_x
-maps[n-1][n-1] = type_o
+maps[n - 1][n - 1] = type_o
 isTurnX = True
 
 
@@ -23,16 +23,16 @@ def printBoard():
 def checkMoveAvailable(type, x, y):
     if maps[x][y] != type_none:
         return False
-    for i in range(x-1, x+2):
-        for j in range(y-1, y+2):
+    for i in range(x - 1, x + 2):
+        for j in range(y - 1, y + 2):
             if i in range(0, n) and j in range(0, n) and maps[i][j] == type:
                 return True
     return False
 
 
 def checkAttack(x, y):
-    for i in range(x-1, x+2):
-        for j in range(y-1, y+2):
+    for i in range(x - 1, x + 2):
+        for j in range(y - 1, y + 2):
             if i in range(0, n) and j in range(0, n) and maps[i][j] != maps[x][y] and maps[i][j] != type_none:
                 maps[i][j] = type_block
 
