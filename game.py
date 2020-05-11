@@ -14,9 +14,6 @@ class Game:
         height, width = 3, 3
         self.board = Board(height, width)
         self.isTurnX = True
-       
-
-    
 
     def __move(self):
         board=self.board
@@ -84,9 +81,5 @@ class Game:
             if board.checkWin() != GameStatus.UNKNOW:
                 break
             self.__move() if self.isTurnX else self.__AIMove()
-
-
-
-
 
 Game().play()
