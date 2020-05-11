@@ -4,7 +4,7 @@ from cellStatus import CellStatus
 from copy import deepcopy
 from gameStatus import GameStatus
 
-INF = 99999
+INF = 9999
 
 
 class Game:
