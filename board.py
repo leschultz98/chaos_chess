@@ -84,16 +84,18 @@ class Board:
                     return True
         return False
 
-    def checkAttack(self, cell):
+    def GetListCanAttack(self, cell):
         map = self.map
         width = self.width
         height = self.height
         x = cell.posX
         y = cell.posY
+        result=[]
         for i in range(x-1, x+2):
             for j in range(y-1, y+2):
                 if i in range(0, height) and j in range(0, width) and map[i][j] != map[x][y] and map[i][j] != CellStatus.NONE:
-                    map[i][j] = CellStatus.BLOCK
+                    result.append([i,j])
+        return result 
 
     def checkWin(self):
         maps = self.map
