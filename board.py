@@ -1,6 +1,8 @@
 from cellStatus import CellStatus
-from cell import Cell
 from gameStatus import GameStatus
+from cell import Cell
+import numpy as np
+
 
 class Board:
     def __init__(self, height, width):
@@ -24,17 +26,17 @@ class Board:
 
     def setCellStatus(self, cell):
         self.map[cell.posX][cell.posY] = cell.status
-    
+
     def checkMoveAvailable(self, cell):
-        height=self.height
-        width=self.width
-        map=self.map
+        height = self.height
+        width = self.width
+        map = self.map
         x = cell.posX
         y = cell.posY
         status = cell.status
         if x not in range(height) and y not in range(width):
             return False
-        if map[x][y] != CellStatus.NONE or self.__canFindWay(status, [], [cell]) == False:
+        if map[x][y] != CellStatus.NONE or self.canFindWay(status, [], [cell]) == False:
             return False
         for i in range(x-1, x+2):
             for j in range(y-1, y+2):
@@ -78,7 +80,7 @@ class Board:
                     map[i][j] = CellStatus.BLOCK
 
     def checkWin(self):
-        maps = board.map
+        maps = self.map
         maps_flat = mapFlat(maps)
         if CellStatus.X not in maps_flat:
             return GameStatus.O_WIN
@@ -87,11 +89,42 @@ class Board:
         # check
         for index, cell in enumerate(maps_flat):
             if cell == CellStatus.NONE:
-                x = index // self.board.width
-                y = index % self.board.width
-                if self.__canFindWay(CellStatus.O, [], [Cell(CellStatus.NONE, x, y)]):
-                    if self.__canFindWay(CellStatus.X, [], [Cell(CellStatus.NONE, x, y)]):
+                x = index // self.width
+                y = index % self.width
+                if self.canFindWay(CellStatus.O, [], [Cell(CellStatus.NONE, x, y)]):
+                    if self.canFindWay(CellStatus.X, [], [Cell(CellStatus.NONE, x, y)]):
                         return GameStatus.UNKNOW
 
-        return self.__statistics()
+        return self.statistics()
+
+    def statistics(self):
+        maps = self.map
+        maps_flat = mapFlat(maps)
+        for index, cell in enumerate(maps_flat):
+            if cell == CellStatus.NONE:
+                posX = index // self.width
+                posY = index % self.width
+                if self.canFindWay(CellStatus.X, [], [Cell(CellStatus.NONE, posX, posY)]):
+                    maps_flat[index] = CellStatus.X
+                elif self.canFindWay(CellStatus.O, [], [Cell(CellStatus.NONE, posX, posY)]):
+                    maps[posX][posY] = CellStatus.O
+
+        point_x = maps_flat.count(CellStatus.X)
+        point_o = maps_flat.count(CellStatus.O)
+        if point_x == point_o:
+            return GameStatus.DRAW
+        return GameStatus.X_WIN if point_x > point_o else GameStatus.O_WIN
+
+    def listCanMove(self, status):
+
+        result = []
+        maps_flat = mapFlat(self.map)
+        for index, _ in enumerate(maps_flat):
+            posX = index // self.width
+            posY = index % self.width
+            if self.checkMoveAvailable(Cell(status, posX, posY)):
+                result.append([posX, posY])
+        return result
+
+
 def mapFlat(maps): return np.array(maps).flatten().tolist()
