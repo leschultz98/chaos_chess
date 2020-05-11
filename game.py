@@ -17,9 +17,6 @@ class Game:
         self.isTurnX = True
         self.winner = None
 
-<<<<<<< HEAD
-    
-=======
     def __checkMoveAvailable(self, board, cell):
         x = cell.posX
         y = cell.posY
@@ -83,7 +80,6 @@ class Game:
         if len(queueWillCheckCell) > 0:
             return self.__canFindWay(status, listCellHadCheck, queueWillCheckCell)
         return False
->>>>>>> 93033f3b6a26ca62542c2b3d0d36abfdfbd6bee7
 
     def __statistics(self):
         maps = self.board.map
