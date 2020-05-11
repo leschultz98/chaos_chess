@@ -1,13 +1,5 @@
-class A:
-    def __init__(self):
-        self.name="hello"
-
-def test(a):
-    print(a.name)
-
-test(A())
-
-a=A()
-b=A()
-print(a==b)
-
+l=[1,2,3]
+for i in l:
+    if(i==2):
+        i=100
+print (l)

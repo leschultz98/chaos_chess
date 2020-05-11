@@ -3,6 +3,8 @@ from board import Board
 from cellStatus import CellStatus
 import numpy as np
 from queue import Queue
+from copy import deepcopy
+from gameStatus import GameStatus
 
 
 class Game:
@@ -20,11 +22,12 @@ class Game:
         y = cell.posY
         queue = Queue()
         queue.put(cell)
-        if board.map[x][y] != CellStatus.NONE or self.__canFindWay([], queue) == False:
+        status = CellStatus.X if self.isTurnX else CellStatus.O
+        if board.map[x][y] != CellStatus.NONE or self.__canFindWay(status, [], queue) == False:
             return False
         for i in range(x-1, x+2):
             for j in range(y-1, y+2):
-                if i in range(0, board.height) and j in range(0, board.width) and board.map[i][j] == cell.status:
+                if i in range(board.height) and j in range(board.width) and board.map[i][j] == cell.status:
                     return True
         return False
 
@@ -42,24 +45,25 @@ class Game:
         maps = self.board.map
         maps_flat = np.array(maps).flatten().tolist()
         if CellStatus.X not in maps_flat:
-            print('O win!')
-            return True
+            return GameStatus.O_WIN
         if CellStatus.O not in maps_flat:
-            print('X win!')
-            return True
+            return GameStatus.X_WIN
         # check
-        # for index, cell in enumerate(maps_flat):
-        #     if cell==CellStatus.TYPE_NONE:
-        #         x=index/self.board.height
-        #         y=index%self.board.width
-        #         for 
+        for index, cell in enumerate(maps_flat):
+            if cell == CellStatus.NONE:
+                x = index / self.board.width
+                y = index % self.board.width
+                queue = Queue()
+                queue.put(Cell(CellStatus.NONE, x, y))
+                if (self.__canFindWay(CellStatus.O, [], queue) == True and self.__canFindWay(CellStatus.X, [], queue) == True):
+                    return GameStatus.UNKNOW
 
-        return False
+        return self.__statistics()
 
-    def __canFindWay(self, listCellHadCheck, queueWillCheckCell):
+    def __canFindWay(self, status, listCellHadCheck, queueWillCheckCell):
         # {posX, posY, status} = cell
         # {map, width, height} = board
-        status = CellStatus.X if self.isTurnX else CellStatus.O
+
         cell = queueWillCheckCell.get()
         listCellHadCheck.append([cell.posX, cell.posY])
         x = cell.posX
@@ -77,21 +81,26 @@ class Game:
                         return True
 
         if queueWillCheckCell.qsize() > 0:
-            return self.__canFindWay(listCellHadCheck, queueWillCheckCell)
+            return self.__canFindWay(status, listCellHadCheck, queueWillCheckCell)
         return False
 
-    def newTemp(self):
+    def __statistics(self):
         maps = self.board.map
         maps_flat = np.array(maps).flatten().tolist()
+        for index, cell in enumerate(maps_flat):
+            if cell == CellStatus.NONE:
+                x = index / self.board.width
+                y = index % self.board.width
+                if self.__canFindWay(CellStatus.X, [], Queue()):
+                    maps_flat[index] = CellStatus.X
+                elif self.__canFindWay(CellStatus.O, [], Queue()):
+                    maps[x][y] = CellStatus.O
+
         point_x = maps_flat.count(CellStatus.X)
         point_o = maps_flat.count(CellStatus.O)
-        print('\tPoint of X: ', point_x)
-        print('\tPoint of Y: ', point_o)
-        if point_x != point_o:
-            self.winner = 'X' if point_x > point_o else 'O'
-            print('\t' + self.winner + ' win!')
-        else:
-            print('\t~Equal~')
+        if point_x == point_o:
+            return GameStatus.DRAW
+        return GameStatus.X_WIN if point_x > point_o else GameStatus.O_WIN
 
     def __move(self, cell):
         if self.__checkMoveAvailable(cell):
@@ -101,6 +110,18 @@ class Game:
             self.isTurnX = not self.isTurnX
         else:
             print('Please try again!')
+
+    def __AIMove(self):
+        if self.__checkWin() != GameStatus.UNKNOW:
+            return
+        status = CellStatus.O
+
+        maps = self.board.map
+
+        self.maxmin()
+
+    def maxmin(self):
+        pass
 
     def play(self):
         while True:
