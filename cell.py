@@ -9,4 +9,3 @@ class Cell:
 
     def compare(self, cell):
         return self.posX == cell.posX and self.posY == cell.posY
-
