@@ -1,3 +1,4 @@
+# from GUIs.game_scene import Scene
 from sources.cell import Cell
 from sources.board import Board
 from sources.cellStatus import CellStatus
@@ -7,14 +8,13 @@ INF = 9999
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, height, width):
         # height = int(input("nhap chieu cao (height): "))
         # width = int(input("nhap chieu rong (width): "))
-        height, width = 3, 4
         self.board = Board(height, width)
         self.isTurnX = True
         self.winner = GameStatus.UNKNOW
-        self.score = height+width+1
+        self.score = height + width + 1
 
     def __move(self):
         board = self.board
@@ -63,15 +63,14 @@ class Game:
             board.setCellStatus(cell)
             board.killAllEnemyNearCell(cell)
 
-
     # stupid AI board < 4x4
     def miniMax(self, board, depth, isTurnAI):
         # print("----------------------")
         # board.printBoard()
         status = CellStatus.O if isTurnAI else CellStatus.X
         state = board.checkWin()
-        stateValue = {GameStatus.O_WIN: self.score-depth,
-                      GameStatus.X_WIN: -self.score+depth, GameStatus.DRAW: 0}
+        stateValue = {GameStatus.O_WIN: self.score - depth,
+                      GameStatus.X_WIN: -self.score + depth, GameStatus.DRAW: 0}
         if state != GameStatus.UNKNOW:
             return stateValue[state]
         listCanMove = board.listCanMove(status)
@@ -85,7 +84,7 @@ class Game:
                 # warning
                 nextBoard.killAllEnemyNearCell(cell)
 
-                value = self.miniMax(nextBoard, depth+1, False)
+                value = self.miniMax(nextBoard, depth + 1, False)
                 bestValue = min(value, bestValue)
             return bestValue
         else:
@@ -98,7 +97,7 @@ class Game:
                 # warning
                 nextBoard.killAllEnemyNearCell(cell)
 
-                value = self.miniMax(nextBoard, depth+1, True)
+                value = self.miniMax(nextBoard, depth + 1, True)
                 bestValue = max(value, bestValue)
             return bestValue
 
@@ -113,6 +112,4 @@ class Game:
                 break
             self.__move() if self.isTurnX else self.__AIMove()
             self.isTurnX = not self.isTurnX
-
-
-Game().play()
+            # Scene(self.board).draw()
