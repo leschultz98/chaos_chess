@@ -1,4 +1,4 @@
-from cellStatus import CellStatus
+from sources.cellStatus import CellStatus
 
 
 class Cell:
