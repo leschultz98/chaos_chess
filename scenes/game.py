@@ -1,4 +1,4 @@
-from imageSource import ImangeSource
+from imageSource import ImageSource,CELL_STEP
 import pygame
 import os
 
@@ -20,20 +20,19 @@ X = 1200
 Y = 700
 
 BOARD_POS_X = 300
-BOARD_POS_Y = 100
+BOARD_POS_Y = 50
 
-CELL_STEP = 20
+
 
 
 gameDisplay = pygame.display.set_mode((X, Y))
 pygame.display.set_caption("chaos chess")
 
-
 gameDisplay.fill(white)
 
-for i in range(20):
-    for j in range(20):
-        gameDisplay.blit(ImangeSource.CELL, (BOARD_POS_X+i * CELL_STEP,
+for i in range(1):
+    for j in range(1):
+        gameDisplay.blit(ImageSource.CELL.value, (BOARD_POS_X + i * CELL_STEP,
                                              BOARD_POS_Y + j * CELL_STEP))
 
 

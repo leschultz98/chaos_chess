@@ -2,14 +2,16 @@ from enum import Enum
 import os
 import pygame
 
-CELL_STEP = 20
+CELL_STEP = 500
 
 
+# def load(dir): return pygame.image.load(
+#     os.path.join('data', '../resources/'+dir))
 def load(dir): return pygame.transform.scale(pygame.image.load(
     os.path.join('data', '../resources/'+dir)), (CELL_STEP, CELL_STEP))
 
 
-class ImangeSource(Enum):
+class ImageSource(Enum):
     CELL = load('cell.png')
     CELL_CLICK = load('cell_click.png')
     CELL_X = load('cell_x.png')
