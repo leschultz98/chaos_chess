@@ -1,7 +1,6 @@
 from cell import Cell
 from board import Board
 from cellStatus import CellStatus
-from copy import deepcopy
 from gameStatus import GameStatus
 
 INF = 9999
@@ -11,10 +10,11 @@ class Game:
     def __init__(self):
         # height = int(input("nhap chieu cao (height): "))
         # width = int(input("nhap chieu rong (width): "))
-        height, width = 3, 3
+        height, width = 3, 4
         self.board = Board(height, width)
         self.isTurnX = True
         self.winner = GameStatus.UNKNOW
+        self.score = height+width+1
 
     def __move(self):
         board = self.board
@@ -28,7 +28,8 @@ class Game:
             cell = Cell(status, pos_x, pos_y)
             if board.checkMoveAvailable(cell):
                 board.setCellStatus(cell)
-                # listCanAttack = board.GetListCanAttack(cell)
+                # kill het
+                board.killAllEnemyNearCell(cell)
                 # if len(listCanAttack):
                 #     self.__choseKillEnemy(listCanAttack)
 
@@ -45,50 +46,60 @@ class Game:
 
     def __AIMove(self):
         board = self.board
-
+        # self.miniMax()
         if board.checkWin() == GameStatus.UNKNOW:
-            bestValue = INF
+            bestValue = -INF
             for move in board.listCanMove(CellStatus.O):
-                currentBoard = deepcopy(board)
-                currentBoard.setCellStatus(
-                    Cell(CellStatus.O, move[0], move[1]))
-
-                moveValue = self.miniMax(currentBoard, False)
-                if bestValue > moveValue:
+                currentBoard = board.deepCopy()
+                cell = Cell(CellStatus.O, move[0], move[1])
+                currentBoard.setCellStatus(cell)
+                currentBoard.killAllEnemyNearCell(cell)
+                moveValue = self.miniMax(currentBoard, 0, True)
+                if bestValue < moveValue:
+                    bestValue = moveValue
                     bestMove = move
-            board.setCellStatus(Cell(CellStatus.O, bestMove[0], bestMove[1]))
 
-    def miniMax(self, board, isTurnX):
-        status = CellStatus.X if isTurnX else CellStatus.O
+            cell = Cell(CellStatus.O, bestMove[0], bestMove[1])
+            board.setCellStatus(cell)
+            board.killAllEnemyNearCell(cell)
+
+
+    # stupid AI board < 4x4
+    def miniMax(self, board, depth, isTurnAI):
+        # print("----------------------")
+        # board.printBoard()
+        status = CellStatus.O if isTurnAI else CellStatus.X
         state = board.checkWin()
-        stateValue = {GameStatus.X_WIN: 10,
-                      GameStatus.O_WIN: -10, GameStatus.DRAW: 0}
+        stateValue = {GameStatus.O_WIN: self.score-depth,
+                      GameStatus.X_WIN: -self.score+depth, GameStatus.DRAW: 0}
         if state != GameStatus.UNKNOW:
             return stateValue[state]
         listCanMove = board.listCanMove(status)
-        if isTurnX:
-            bestValue = -INF
-            for move in listCanMove:
-                posX, posY = move
-                cell = Cell(status, posX, posY)
-                nextBoard = deepcopy(board)
-                nextBoard.setCellStatus(cell)
-                # warning
-                # listCanAttack = nextBoard.GetListCanAttack(cell)
-                # if len(listCanAttack):
-                #     self.__choseKillEnemy(listCanAttack)
-
-                value = self.miniMax(nextBoard, False)
-                bestValue = max(value, bestValue)
-            return bestValue
-        else:
+        if isTurnAI:
             bestValue = INF
             for move in listCanMove:
                 posX, posY = move
-                nextBoard = deepcopy(board)
-                nextBoard.setCellStatus(Cell(status, posX, posY))
-                value = self.miniMax(nextBoard, True)
+                cell = Cell(status, posX, posY)
+                nextBoard = board.deepCopy()
+                nextBoard.setCellStatus(cell)
+                # warning
+                nextBoard.killAllEnemyNearCell(cell)
+
+                value = self.miniMax(nextBoard, depth+1, False)
                 bestValue = min(value, bestValue)
+            return bestValue
+        else:
+            bestValue = -INF
+            for move in listCanMove:
+                posX, posY = move
+                nextBoard = board.deepCopy()
+                cell = Cell(status, posX, posY)
+                nextBoard.setCellStatus(cell)
+                # warning
+                nextBoard.killAllEnemyNearCell(cell)
+
+                value = self.miniMax(nextBoard, depth+1, True)
+                bestValue = max(value, bestValue)
             return bestValue
 
     def play(self):

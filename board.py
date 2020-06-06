@@ -2,6 +2,7 @@ from cellStatus import CellStatus
 from gameStatus import GameStatus
 from cell import Cell
 import numpy as np
+from copy import deepcopy
 
 
 class Board:
@@ -56,6 +57,11 @@ class Board:
             return GameStatus.DRAW
         return GameStatus.X_WIN if point_x > point_o else GameStatus.O_WIN
 
+    def deepCopy(self):
+        newBoard = Board(self.height, self.width)
+        newBoard.map = deepcopy(self.map)
+        return newBoard
+
     def printBoard(self):
         print(" ".join([' '] + [str(x) for x in list(range(self.width))]))
         for x in range(self.height):
@@ -84,18 +90,23 @@ class Board:
                     return True
         return False
 
-    def GetListCanAttack(self, cell):
+    def getListCanAttack(self, cell):
         map = self.map
         width = self.width
         height = self.height
         x = cell.posX
         y = cell.posY
-        result=[]
+        result = []
         for i in range(x-1, x+2):
             for j in range(y-1, y+2):
                 if i in range(0, height) and j in range(0, width) and map[i][j] != map[x][y] and map[i][j] != CellStatus.NONE:
-                    result.append([i,j])
-        return result 
+                    result.append([i, j])
+        return result
+
+    def killAllEnemyNearCell(self, cell):
+        listCanAttack = self.getListCanAttack(cell)
+        for move in listCanAttack:
+            self.setCellStatus(Cell(CellStatus.BLOCK, move[0], move[1]))
 
     def checkWin(self):
         maps = self.map
