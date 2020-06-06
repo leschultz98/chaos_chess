@@ -1,7 +1,7 @@
-from cell import Cell
-from board import Board
-from cellStatus import CellStatus
-from gameStatus import GameStatus
+from sources.cell import Cell
+from sources.board import Board
+from sources.cellStatus import CellStatus
+from sources.gameStatus import GameStatus
 
 INF = 9999
 

@@ -1,6 +1,6 @@
-from cellStatus import CellStatus
-from gameStatus import GameStatus
-from cell import Cell
+from sources.cellStatus import CellStatus
+from sources.gameStatus import GameStatus
+from sources.cell import Cell
 import numpy as np
 from copy import deepcopy
 
