@@ -1,3 +1,4 @@
+# pylint: disable = import-error
 from sources.cellStatus import CellStatus
 from sources.gameStatus import GameStatus
 from sources.cell import Cell
