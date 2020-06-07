@@ -1,4 +1,3 @@
-# from GUIs.game_scene import Scene
 from sources.cell import Cell
 from sources.board import Board
 from sources.cellStatus import CellStatus
@@ -16,26 +15,16 @@ class Game:
         self.winner = GameStatus.UNKNOW
         self.score = height + width + 1
 
-    def __move(self):
-        board = self.board
-        while True:
-            status = CellStatus.X if self.isTurnX else CellStatus.O
-            position = input('Nhap toa do ' + str(status.value) +
-                             ' (Enter "q" to end game): ')
-
-            pos_x, pos_y = [int(x) for x in position.split()]
-
-            cell = Cell(status, pos_x, pos_y)
-            if board.checkMoveAvailable(cell):
-                board.setCellStatus(cell)
-                # kill het
-                board.killAllEnemyNearCell(cell)
-                # if len(listCanAttack):
-                #     self.__choseKillEnemy(listCanAttack)
-
-                return
-            else:
-                print('Please try again!')
+    def move(self, pos):
+        status = CellStatus.X if self.isTurnX else CellStatus.O
+        cell = Cell(status, pos[1], pos[0])
+        if self.board.checkMoveAvailable(cell):
+            self.board.setCellStatus(cell)
+            self.board.killAllEnemyNearCell(cell)
+            # self.isTurnX = not self.isTurnX
+            self.AIMove()
+        else:
+            print('Please try again!')
 
     def __choseKillEnemy(self, listCanAttack):
         while True:
@@ -44,7 +33,7 @@ class Game:
             if [pos_x, pos_y] in listCanAttack:
                 self.board.setCellStatus(Cell(CellStatus.BLOCK, pos_x, pos_y))
 
-    def __AIMove(self):
+    def AIMove(self):
         board = self.board
         # self.miniMax()
         if board.checkWin() == GameStatus.UNKNOW:
@@ -110,6 +99,5 @@ class Game:
             if winner != GameStatus.UNKNOW:
                 print(winner.value)
                 break
-            self.__move() if self.isTurnX else self.__AIMove()
+            # self.move() if self.isTurnX else self.AIMove()
             self.isTurnX = not self.isTurnX
-            # Scene(self.board).draw()
